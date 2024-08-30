@@ -7,11 +7,18 @@ int **createPuzzle() {
     int i, j;
     int array[9][9];
 
+    FILE *puzzletxt = fopen("puzzle.txt", "r");
+    if (puzzletxt == NULL) {
+        exit(EXIT_FAILURE);
+    }
+
     for (i = 0; i < 9; ++i) {
         for (j = 0; j < 9; ++j) {
-            scanf("%d", &array[i][j]);
+            fscanf(puzzletxt, "%d", &array[i][j]);
         }
     }
+
+    fclose(puzzletxt);
 
     puzzle = (int**)calloc(9, sizeof(int*));
     for (i = 0; i < 9; ++i) {
@@ -23,6 +30,8 @@ int **createPuzzle() {
 
     return puzzle;
 }
+
+
 
 void printPuzzle(int **puzzle) {
     int i, j;
