@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "puzzle.h"
+#include "functions.h"
+
+Square ***setUpPuzzle(int **puzzle) {
+    
+}
 
 int **createPuzzle() {
     int **puzzle;
