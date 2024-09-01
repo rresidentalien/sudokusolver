@@ -1,2 +1,5 @@
 *.exe
 .vscode
+functions.o
+sudoku_solver
+sudoku.o
