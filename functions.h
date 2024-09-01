@@ -1,25 +1,32 @@
 // puzzle.h
-#ifndef PUZZLE_H
-#define PUZZLE_H
+#ifndef FUNCTIONS_H
+#define FUNCTIONS_H
+
+extern int unsolved;
+extern int SIZE_ROWS;
+extern int SIZE_COLUMNS;
 
 typedef struct box {
-    
+    struct Box *next;
 } Box;
 
-typedef struct square {
+typedef struct cell {
     int number;
-    char possible; /*9 characters, either 0 or 1, indicating whether a certain number (9-1) can be put in that square
+    int possible[9]; /*9 numbers, either 0 or 1, indicating whether a certain number (9-1) can be put in that cell
     0 = can be that number      1 = can't be that number
-    987654321
-    011110110   this sequence would mean that a certain position can be 9, 4 or 1*/
+    9 8 7 6 5 4 3 2 1
+    0 1 1 1 1 0 1 1 0   this sequence would mean that the number can be 9, 4 or 1*/
+    int solvable; //count of possible numbers that can be placed in a cell
     Box *box;
     int row;
     int column;
-} Square;
+} Cell;
 
-
-Square ***setUpPuzzle(int **puzzle);
+int updateSudoku(Cell ***, int, int);
+Cell ***setUpPuzzle(int **);
+void solveCell(Cell *);
+int checkPuzzle(Cell ***);
 int **createPuzzle();
-void printPuzzle(int **puzzle);
+void printPuzzle(Cell ***);
 
-#endif // PUZZLE_H
+#endif // FUNCTIONS_H
