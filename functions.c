@@ -2,7 +2,10 @@
 #include <stdlib.h>
 #include "functions.h"
 
-
+/*function that allocates space for the puzzle and fills out each cell with information (number, row, column), sets number of
+solvable values to 9 and changes all numbers 1 through 9 to possible
+if a cell already has a number in it (other than 0), its solvable count is changed to 0, number of unsolved cells is decremented
+and function updateSudoku is called*/
 Cell ***setUpPuzzle(int **puzzle) {
     Cell ***cell;
     int i, j, k;
@@ -63,7 +66,8 @@ int updateSudoku(Cell ***cell, int row, int column) {
     return 1;
 }
 
-
+/*if a number 1 through 9 is possible to be put in a cell, it is put in that cell, solvable is changed to 0 (to indicate
+no possible solutions left) and unsolved is decremented*/
 void solveCell(Cell *cell) {
     int i;
     for (i = 0; i < SIZE_ROWS; ++i) {
@@ -75,6 +79,7 @@ void solveCell(Cell *cell) {
     }
 }
 
+/*if a cell can only have one number be put into it, solveCell and updateSudoku are callled*/
 int checkPuzzle(Cell ***cell) {
     int i, j;
 
@@ -89,6 +94,8 @@ int checkPuzzle(Cell ***cell) {
     return 1;
 }
 
+
+//reads the puzzle from puzzle.txt and returns it as a dynamically allocated 2d array
 int **createPuzzle() {
     int **puzzle;
     int i, j;
@@ -119,7 +126,7 @@ int **createPuzzle() {
 }
 
 
-
+//prints the puzzle into the terminal with some simple formatting
 void printPuzzle(Cell ***puzzle) {
     int i, j;
 
