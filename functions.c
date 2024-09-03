@@ -2,15 +2,50 @@
 #include <stdlib.h>
 #include "functions.h"
 
+Square **createSquares() {
+    int i, j;
+    Square **squares;
+    squares = calloc(9, sizeof(Square*));
+
+    for (i = 0; i < 9; ++i) {
+        squares[i] = malloc(sizeof(Square));
+        squares[i]->cells = calloc(9, sizeof(Cell*));
+        squares[i]->numbers = 0;
+        squares[i]->solvable = 9;
+
+        for (j = 0; j < 9; ++j) {
+            squares[i]->possible[j] = 0;
+        }
+    }
+    return squares;
+}
+
+int updateSquares(Cell ***cell, int row, int column) {
+    int i;
+    int number = cell[row][column]->number;
+    Square *square;
+    square = cell[row][column]->square;
+
+    for (i = 0; i < 9; ++i) {
+        if (square->cells[i]->possible[number - 1] == 0) {
+            --square->cells[i]->solvable;
+            square->cells[i]->possible[number - 1] = 1;
+        }
+    }
+}
+
 /*function that allocates space for the puzzle and fills out each cell with information (number, row, column), sets number of
 solvable values to 9 and changes all numbers 1 through 9 to possible
 if a cell already has a number in it (other than 0), its solvable count is changed to 0, number of unsolved cells is decremented
 and function updateSudoku is called*/
 Cell ***setUpPuzzle(int **puzzle) {
     Cell ***cell;
+    Square **squares;
     int i, j, k;
+    int currentSquare = 0;
 
     cell = (Cell***)calloc(9, sizeof(Cell**));
+    squares = createSquares();
 
     for (i = 0; i < SIZE_ROWS; ++i) {
         cell[i] = (Cell**)calloc(9, sizeof(Cell*));
@@ -23,9 +58,25 @@ Cell ***setUpPuzzle(int **puzzle) {
             cell[i][j]->column = j;
             cell[i][j]->solvable = 9;
 
+            squares[currentSquare]->cells[squares[currentSquare]->numbers] = cell[i][j];
+            cell[i][j]->square = squares[currentSquare];
+            ++squares[currentSquare]->numbers;
+
             for (k = 0; k < SIZE_ROWS; ++k) {
                 cell[i][j]->possible[k] = 0;
             }
+
+            if (j == 2 || j == 5) {
+                ++currentSquare;
+            }
+        }
+
+        currentSquare -= 2;
+        if (i == 2) {
+            currentSquare = 3;
+        }
+        if (i == 5) {
+            currentSquare = 6;
         }
     }
 
@@ -34,6 +85,7 @@ Cell ***setUpPuzzle(int **puzzle) {
             if (cell[i][j]->number != 0) {
                 cell[i][j]->solvable = 0; //it already has a number in that place, so it does not need to be solved
                 updateSudoku(cell, i, j);
+                updateSquares(cell, i, j);
                 --unsolved;
             }
         }
