@@ -13,7 +13,12 @@ int main() {
 
     cell = setUpPuzzle(puzzle);
 
-    checkPuzzle(cell);
+    printPuzzle(cell);
+    printf("\n\n");
+
+    do {
+        checkPuzzle(cell);
+    }while (unsolved >= 1);
 
     printPuzzle(cell);
 
