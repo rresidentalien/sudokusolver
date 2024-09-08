@@ -5,11 +5,11 @@
 Square **createSquares() {
     int i, j;
     Square **squares;
-    squares = calloc(9, sizeof(Square*));
+    squares = calloc(9, sizeof(Square *));
 
     for (i = 0; i < 9; ++i) {
         squares[i] = malloc(sizeof(Square));
-        squares[i]->cells = calloc(9, sizeof(Cell*));
+        squares[i]->cells = calloc(9, sizeof(Cell *));
         squares[i]->numbers = 0;
         squares[i]->solvable = 9;
 
@@ -44,14 +44,14 @@ Cell ***setUpPuzzle(int **puzzle) {
     int i, j, k;
     int currentSquare = 0;
 
-    cell = (Cell***)calloc(9, sizeof(Cell**));
+    cell = (Cell ***)calloc(9, sizeof(Cell **));
     squares = createSquares();
 
     for (i = 0; i < SIZE_ROWS; ++i) {
-        cell[i] = (Cell**)calloc(9, sizeof(Cell*));
+        cell[i] = (Cell **)calloc(9, sizeof(Cell *));
 
         for (j = 0; j < SIZE_COLUMNS; ++j) {
-            cell[i][j] = (Cell*)calloc(9, sizeof(Cell));
+            cell[i][j] = (Cell *)calloc(9, sizeof(Cell));
 
             cell[i][j]->number = puzzle[i][j];
             cell[i][j]->row = i;
@@ -166,9 +166,9 @@ int **createPuzzle() {
 
     fclose(puzzletxt);
 
-    puzzle = (int**)calloc(9, sizeof(int*));
+    puzzle = (int **)calloc(9, sizeof(int *));
     for (i = 0; i < SIZE_ROWS; ++i) {
-        puzzle[i] = (int*)calloc(9, sizeof(int));
+        puzzle[i] = (int *)calloc(9, sizeof(int));
         for (j = 0; j < SIZE_COLUMNS; ++j) {
             puzzle[i][j] = array[i][j];
         }
@@ -179,14 +179,19 @@ int **createPuzzle() {
 
 
 //prints the puzzle into the terminal with some simple formatting
-void printPuzzle(Cell ***puzzle) {
+void printPuzzle(Cell ***puzzle, Cell ***compared) {
     int i, j;
 
     printf("-------------------------------\n");
     for (i = 0; i < SIZE_ROWS; ++i) {
         printf("|");
         for (j = 0; j < SIZE_COLUMNS; ++j) {
-            printf(" %d ", puzzle[i][j]->number);
+            if (puzzle[i][j]->number == compared[i][j]->number) {
+                printf(" %d ", puzzle[i][j]->number);
+            }
+            else {
+                printf(" %d*", puzzle[i][j]->number);
+            }
             if (((j + 1) % 3) == 0) {
                 printf("|");
             }
