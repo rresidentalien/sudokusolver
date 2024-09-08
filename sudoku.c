@@ -7,20 +7,20 @@ int SIZE_COLUMNS = 9;
 
 int main() {
     int **puzzle;
-    Cell ***cell;
+    Sudoku *sudoku;
 
     puzzle = createPuzzle();
 
-    cell = setUpPuzzle(puzzle);
+    sudoku = setUpPuzzle(puzzle);
 
-    printPuzzle(cell);
+    printPuzzle(sudoku->cells);
     printf("\n\n");
 
     do {
-        checkPuzzle(cell);
+        checkPuzzle(sudoku->cells, sudoku->squares);
     }while (unsolved >= 1);
 
-    printPuzzle(cell);
+    printPuzzle(sudoku->cells);
 
     return 0;
 }

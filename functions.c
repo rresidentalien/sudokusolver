@@ -2,6 +2,42 @@
 #include <stdlib.h>
 #include "functions.h"
 
+int squareSingles(Cell ***sudoku, Square **squares) {
+    int i, j, k;
+    int count, temp;
+
+    //loop through squares
+    for (i = 0; i < 9; ++i) {
+        //loop through possible array
+        for (j = 0; j < 9; ++j) {
+            count = 0;
+
+            //loop through cells
+            for (k = 0; k < 9; ++k) {
+                if (squares[i]->cells[k]->number != 0) {
+                    continue;
+                }
+
+                if (squares[i]->cells[k]->possible[j] == 0) {
+                    ++count;
+                    temp = k;
+                }
+
+                if (count == 2) {
+                    break;
+                }
+            }
+            if (count == 1) {
+                squares[i]->cells[temp]->number = j + 1;
+                --unsolved;
+                squares[i]->cells[temp]->solvable = 0;
+
+                updateSudoku(sudoku, squares[i]->cells[temp]->row, squares[i]->cells[temp]->column);
+            }
+        }
+    }
+}
+
 Square **createSquares() {
     int i, j;
     Square **squares;
@@ -34,11 +70,20 @@ int updateSquares(Cell ***cell, int row, int column) {
     }
 }
 
+Sudoku *createSudoku(Cell ***cells, Square **squares) {
+    Sudoku *sudoku;
+    sudoku = malloc(sizeof(Sudoku));
+    sudoku->cells = cells;
+    sudoku->squares = squares;
+
+    return sudoku;
+}
+
 /*function that allocates space for the puzzle and fills out each cell with information (number, row, column), sets number of
 solvable values to 9 and changes all numbers 1 through 9 to possible
 if a cell already has a number in it (other than 0), its solvable count is changed to 0, number of unsolved cells is decremented
 and function updateSudoku is called*/
-Cell ***setUpPuzzle(int **puzzle) {
+Sudoku *setUpPuzzle(int **puzzle) {
     Cell ***cell;
     Square **squares;
     int i, j, k;
@@ -91,7 +136,7 @@ Cell ***setUpPuzzle(int **puzzle) {
         }
     }
 
-    return cell;
+    return createSudoku(cell, squares);
 }
 
 
@@ -131,8 +176,8 @@ void solveCell(Cell *cell) {
     }
 }
 
-/*if a cell can only have one number be put into it, solveCell and updateSudoku are callled*/
-int checkPuzzle(Cell ***cell) {
+/*if a cell can only have one number be put into it, solveCell and updateSudoku are called*/
+int checkPuzzle(Cell ***cell, Square **square) {
     int i, j;
 
     for (i = 0; i < SIZE_ROWS; ++i) {
@@ -140,9 +185,12 @@ int checkPuzzle(Cell ***cell) {
             if (cell[i][j]->solvable == 1) {
                 solveCell(cell[i][j]);
                 updateSudoku(cell, i, j);
+                updateSquares(cell, i, j);
             }
         }
     }
+    squareSingles(cell, square);
+
     return 1;
 }
 
