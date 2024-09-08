@@ -40,6 +40,6 @@ Sudoku *createSudoku(Cell ***, Square **);
 void solveCell(Cell *);
 int checkPuzzle(Cell ***, Square **);
 int **createPuzzle();
-void printPuzzle(Cell ***);
+void printPuzzle(Cell ***, Cell ***);
 
 #endif // FUNCTIONS_H

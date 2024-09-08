@@ -227,14 +227,19 @@ int **createPuzzle() {
 
 
 //prints the puzzle into the terminal with some simple formatting
-void printPuzzle(Cell ***puzzle) {
+void printPuzzle(Cell ***puzzle, Cell ***compared) {
     int i, j;
 
     printf("-------------------------------\n");
     for (i = 0; i < SIZE_ROWS; ++i) {
         printf("|");
         for (j = 0; j < SIZE_COLUMNS; ++j) {
-            printf(" %d ", puzzle[i][j]->number);
+            if (puzzle[i][j]->number == compared[i][j]->number) {
+                printf(" %d ", puzzle[i][j]->number);
+            }
+            else {
+                printf(" %d*", puzzle[i][j]->number);
+            }
             if (((j + 1) % 3) == 0) {
                 printf("|");
             }
