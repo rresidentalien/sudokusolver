@@ -33,6 +33,6 @@ Cell ***setUpPuzzle(int **);
 void solveCell(Cell *);
 int checkPuzzle(Cell ***);
 int **createPuzzle();
-void printPuzzle(Cell ***);
+void printPuzzle(Cell ***, Cell ***);
 
 #endif // FUNCTIONS_H
