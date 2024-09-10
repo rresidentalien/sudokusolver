@@ -9,12 +9,12 @@ int main() {
 
     int i = 0;
     int **puzzle;
-    Sudoku *sudoku, *sudoku_copy;
+    Sudoku *sudoku, *sudoku_unsolved;
 
     puzzle = createPuzzle();
 
     sudoku = setUpPuzzle(puzzle);
-    sudoku_copy = setUpPuzzle(puzzle);
+    sudoku_unsolved = setUpPuzzle(puzzle);
   
     printPuzzle(sudoku->cells, sudoku->cells);
     printf("\n\n");
@@ -24,7 +24,7 @@ int main() {
         checkPuzzle(sudoku->cells, sudoku->squares);
     }while (unsolved >= 1 && i < 100);
 
-    printPuzzle(sudoku->cells, sudoku_copy->cells);
+    printPuzzle(sudoku->cells, sudoku_unsolved->cells);
     printf("Iterations = %d\n", i);
 
     return 0;
