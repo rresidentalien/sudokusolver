@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "functions.h"
 
+
+/*function that solves cells that only have one possible number left*/
 int squareSingles(Cell ***sudoku, Square **squares) {
     int i, j, k;
     int count, temp;
@@ -14,19 +16,25 @@ int squareSingles(Cell ***sudoku, Square **squares) {
 
             //loop through cells
             for (k = 0; k < 9; ++k) {
+                //if a cell already has a number in it, it is skipped
                 if (squares[i]->cells[k]->number != 0) {
                     continue;
                 }
 
+                //if the current number (j) can be placed, count is incremented and the cell number (k) is saved to temp
                 if (squares[i]->cells[k]->possible[j] == 0) {
                     ++count;
                     temp = k;
                 }
 
+                //if count increases to 2, then the number is not the only one possible, so we break out of the loop
                 if (count == 2) {
                     break;
                 }
             }
+
+            /*if count is 1 by the end of the loop, j+1 (because arrays start from 0) is stored into the cell, 
+            unsolved is decremented and solvable is set to 0. in the end, updateSudoku is called*/
             if (count == 1) {
                 squares[i]->cells[temp]->number = j + 1;
                 --unsolved;
@@ -38,6 +46,8 @@ int squareSingles(Cell ***sudoku, Square **squares) {
     }
 }
 
+
+/*function that allocates space for 9 squares (whole puzzle), sets all cells to 0, all values as possible and solvable to 9*/
 Square **createSquares() {
     int i, j;
     Square **squares;
@@ -56,6 +66,7 @@ Square **createSquares() {
     return squares;
 }
 
+/*function that updates possible values of cells in a 3x3 square. it is called in setUpPuzzle and checkPuzzle*/
 int updateSquares(Cell ***cell, int row, int column) {
     int i;
     int number = cell[row][column]->number;
@@ -70,6 +81,8 @@ int updateSquares(Cell ***cell, int row, int column) {
     }
 }
 
+/*function that dynamically allocates the size of the whole puzzle and returns it in form of provided cells and squares as part of 
+whole puzzle*/
 Sudoku *createSudoku(Cell ***cells, Square **squares) {
     Sudoku *sudoku;
     sudoku = malloc(sizeof(Sudoku));
