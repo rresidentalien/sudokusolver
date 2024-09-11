@@ -212,24 +212,43 @@ int checkPuzzle(Cell ***cell, Square **square) {
 int **createPuzzle() {
     int **puzzle;
     int i, j;
-    int array[9][9];
+    int array[SIZE_ROWS][SIZE_COLUMNS];
 
     FILE *puzzletxt = fopen("puzzle.txt", "r");
     if (puzzletxt == NULL) {
+        printf("Error opening puzzle.txt");
         exit(EXIT_FAILURE);
     }
 
     for (i = 0; i < SIZE_ROWS; ++i) {
         for (j = 0; j < SIZE_COLUMNS; ++j) {
-            fscanf(puzzletxt, "%d", &array[i][j]);
+            if (fscanf(puzzletxt, "%d", &array[i][j]) != 1) {
+                printf("Error reading puzzle.txt");
+                fclose(puzzletxt);
+                exit(EXIT_FAILURE);
+            }
         }
     }
 
     fclose(puzzletxt);
 
     puzzle = (int**)calloc(9, sizeof(int*));
+    if (puzzle == NULL) {
+        printf("Error allocating memory");
+        exit(EXIT_FAILURE);
+    }
+
     for (i = 0; i < SIZE_ROWS; ++i) {
         puzzle[i] = (int*)calloc(9, sizeof(int));
+        if (puzzle[i] == NULL) {
+            printf("Error allocating memory");
+            for (j = 0; j < i; ++j) {
+                free(puzzle[j]);
+            }
+            free(puzzle);
+            exit(EXIT_FAILURE);
+        }
+
         for (j = 0; j < SIZE_COLUMNS; ++j) {
             puzzle[i][j] = array[i][j];
         }
@@ -249,8 +268,7 @@ void printPuzzle(Cell ***puzzle, Cell ***compared) {
         for (j = 0; j < SIZE_COLUMNS; ++j) {
             if (puzzle[i][j]->number == compared[i][j]->number) {
                 printf(" %d ", puzzle[i][j]->number);
-            }
-            else {
+            } else {
                 printf(" %d*", puzzle[i][j]->number);
             }
             if (((j + 1) % 3) == 0) {
