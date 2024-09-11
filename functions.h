@@ -34,11 +34,15 @@ typedef struct Cell {
 Square **createSquares();
 int updateSquares(Cell ***, int, int);
 int squareSingles(Cell ***, Square **);
+
+int checkRows(Cell ***, Square **);
 int updateSudoku(Cell ***, int, int);
 Sudoku *setUpPuzzle(int **);
 Sudoku *createSudoku(Cell ***, Square **);
+
 void solveCell(Cell *);
 int checkPuzzle(Cell ***, Square **);
+
 int **createPuzzle();
 void printPuzzle(Cell ***, Cell ***);
 

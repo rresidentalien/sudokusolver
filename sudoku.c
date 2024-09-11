@@ -14,7 +14,6 @@ int main() {
     puzzle = createPuzzle();
 
     sudoku = setUpPuzzle(puzzle);
-    sudoku_unsolved = setUpPuzzle(puzzle);
   
     printPuzzle(sudoku->cells, sudoku->cells);
     printf("\n\n");
@@ -22,9 +21,9 @@ int main() {
     do {
         i++;
         checkPuzzle(sudoku->cells, sudoku->squares);
-    }while (unsolved >= 1 && i < 100);
+    }while ( i < 200);
 
-    printPuzzle(sudoku->cells, sudoku_unsolved->cells);
+    printPuzzle(sudoku->cells, sudoku->cells);
     printf("Iterations = %d\n", i);
 
     return 0;
