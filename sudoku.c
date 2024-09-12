@@ -7,7 +7,7 @@ int SIZE_COLUMNS = 9;
 
 int main() {
 
-    int i = 0;
+    int progress;
     int **puzzle;
     Sudoku *sudoku, *sudoku_unsolved;
 
@@ -15,16 +15,22 @@ int main() {
 
     sudoku = setUpPuzzle(puzzle);
   
-    printPuzzle(sudoku->cells, sudoku->cells);
-    printf("\n\n");
+    printPuzzle(sudoku->cells);
+    
 
-    do {
-        i++;
-        checkPuzzle(sudoku->cells, sudoku->squares);
-    }while ( i < 200);
+    while (unsolved > 0)
+    {
+        progress = checkPuzzle(sudoku->cells, sudoku->squares);
 
-    printPuzzle(sudoku->cells, sudoku->cells);
-    printf("Iterations = %d\n", i);
+        if (progress == 0)
+        {
+            printf("\nFailed to solve the puzzle!\n\n");
+            break;
+        }
+    }
+
+    printf("\nFinished puzzle:\n");
+    printPuzzle(sudoku->cells);
 
     return 0;
 }

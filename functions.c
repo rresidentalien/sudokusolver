@@ -2,6 +2,41 @@
 #include <stdlib.h>
 #include "functions.h"
 
+/*if a number 1 through 9 is possible to be put in a cell, it is put in that cell, solvable is changed to 0 (to indicate
+no possible solutions left) and unsolved is decremented*/
+void solveCell(Cell *cell) {
+    int i;
+    for (i = 0; i < SIZE_ROWS; ++i) {
+        if (cell->possible[i] == 0) {
+            cell->number = i + 1;
+            cell->solvable = 0;
+            --unsolved;
+        }
+    }
+}
+
+/*function that will update possibility of a number being in a certain spot.
+for every cell of the column/row, if a number can't be put in the cell, decrement solvable*/
+int updateSolvable(Cell ***cell, int row, int column) {
+    int i;
+    int number = cell[row][column]->number;
+
+    for (i = 0; i < SIZE_ROWS; ++i) {
+        if (cell[i][column]->possible[number - 1] == 0) {
+            --cell[i][column]->solvable;
+        }
+        cell[i][column]->possible[number - 1] = 1;
+    }
+
+    for (i = 0; i < SIZE_COLUMNS; ++i) {
+        if (cell[row][i]->possible[number - 1] == 0) {
+            --cell[row][i]->solvable;
+        }
+        cell[row][i]->possible[number - 1] = 1;
+    }
+
+    return 1;
+}
 
 /*function that solves cells that only have one possible number left*/
 int squareSingles(Cell ***sudoku, Square **squares) {
@@ -34,16 +69,20 @@ int squareSingles(Cell ***sudoku, Square **squares) {
             }
 
             /*if count is 1 by the end of the loop, j+1 (because arrays start from 0) is stored into the cell, 
-            unsolved is decremented and solvable is set to 0. in the end, updateSudoku is called*/
+            unsolved is decremented and solvable is set to 0. in the end, updateSolvable is called*/
             if (count == 1) {
                 squares[i]->cells[temp]->number = j + 1;
                 --unsolved;
                 squares[i]->cells[temp]->solvable = 0;
 
-                updateSudoku(sudoku, squares[i]->cells[temp]->row, squares[i]->cells[temp]->column);
+                updateSolvable(sudoku, squares[i]->cells[temp]->row, squares[i]->cells[temp]->column);
+
+                return 1;
             }
         }
     }
+
+    return 0;
 }
 
 
@@ -116,7 +155,7 @@ int checkRows(Cell ***cell, Square **square) {
                 cell[i][place[j]]->solvable = 0;
                 --unsolved;
 
-                updateSudoku(cell, i, place[j]);
+                updateSolvable(cell, i, place[j]);
                 updateSquares(cell, i, place[j]);
 
                 return 1;
@@ -141,7 +180,7 @@ Sudoku *createSudoku(Cell ***cells, Square **squares) {
 /*function that allocates space for the puzzle and fills out each cell with information (number, row, column), sets number of
 solvable values to 9 and changes all numbers 1 through 9 to possible
 if a cell already has a number in it (other than 0), its solvable count is changed to 0, number of unsolved cells is decremented
-and function updateSudoku is called*/
+and function updateSolvable is called*/
 Sudoku *setUpPuzzle(int **puzzle) {
     Cell ***cell;
     Square **squares;
@@ -170,7 +209,10 @@ Sudoku *setUpPuzzle(int **puzzle) {
                 cell[i][j]->possible[k] = 0;
             }
 
-            if (j == 2 || j == 5) {
+            if (j == 2) {
+                ++currentSquare;
+            }
+            if (j == 5) {
                 ++currentSquare;
             }
         }
@@ -188,7 +230,7 @@ Sudoku *setUpPuzzle(int **puzzle) {
         for (j = 0; j < SIZE_COLUMNS; ++j) {
             if (cell[i][j]->number != 0) {
                 cell[i][j]->solvable = 0; //it already has a number in that place, so it does not need to be solved
-                updateSudoku(cell, i, j);
+                updateSolvable(cell, i, j);
                 updateSquares(cell, i, j);
                 --unsolved;
             }
@@ -198,44 +240,9 @@ Sudoku *setUpPuzzle(int **puzzle) {
     return createSudoku(cell, squares);
 }
 
-
-/*function that will update possibility of a number being in a certain spot.
-for every cell of the column/row, if a number can't be put in the cell, decrement solvable*/
-int updateSudoku(Cell ***cell, int row, int column) {
-    int i;
-    int number = cell[row][column]->number;
-
-    for (i = 0; i < SIZE_ROWS; ++i) {
-        if (cell[i][column]->possible[number - 1] == 0) {
-            --cell[i][column]->solvable;
-        }
-        cell[i][column]->possible[number - 1] = 1;
-    }
-
-    for (i = 0; i < SIZE_COLUMNS; ++i) {
-        if (cell[row][i]->possible[number - 1] == 0) {
-            --cell[row][i]->solvable;
-        }
-        cell[row][i]->possible[number - 1] = 1;
-    }
-
-    return 1;
-}
-
-/*if a number 1 through 9 is possible to be put in a cell, it is put in that cell, solvable is changed to 0 (to indicate
-no possible solutions left) and unsolved is decremented*/
-void solveCell(Cell *cell) {
-    int i;
-    for (i = 0; i < SIZE_ROWS; ++i) {
-        if (cell->possible[i] == 0) {
-            cell->number = i + 1;
-            cell->solvable = 0;
-            --unsolved;
-        }
-    }
-}
-
-/*if a cell can only have one number be put into it, solveCell and updateSudoku are called*/
+/*if a cell can only have one number be put into it, solveCell and updateSolvable are called
+if a number was found with any of the function calls, it'll return 1, and if not, it'll return 0 - indicator that puzzle can't
+be solved*/
 int checkPuzzle(Cell ***cell, Square **square) {
     int i, j;
 
@@ -243,8 +250,10 @@ int checkPuzzle(Cell ***cell, Square **square) {
         for (j = 0; j < SIZE_COLUMNS; ++j) {
             if (cell[i][j]->solvable == 1) {
                 solveCell(cell[i][j]);
-                updateSudoku(cell, i, j);
+                updateSolvable(cell, i, j);
                 updateSquares(cell, i, j);
+
+                return 1;
             }
         }
     }
@@ -307,18 +316,15 @@ int **createPuzzle() {
 
 
 //prints the puzzle into the terminal with some simple formatting
-void printPuzzle(Cell ***puzzle, Cell ***compared) {
+void printPuzzle(Cell ***puzzle) {
     int i, j;
 
     printf("-------------------------------\n");
     for (i = 0; i < SIZE_ROWS; ++i) {
         printf("|");
         for (j = 0; j < SIZE_COLUMNS; ++j) {
-            if (puzzle[i][j]->number == compared[i][j]->number) {
-                printf(" %d ", puzzle[i][j]->number);
-            } else {
-                printf(" %d*", puzzle[i][j]->number);
-            }
+            printf(" %d ", puzzle[i][j]->number);
+
             if (((j + 1) % 3) == 0) {
                 printf("|");
             }
