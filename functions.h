@@ -36,6 +36,7 @@ int updateSquares(Cell ***, int, int);
 int squareSingles(Cell ***, Square **);
 
 int checkRows(Cell ***, Square **);
+int checkColumns(Cell ***, Square **);
 int updateSolvable(Cell ***, int, int);
 Sudoku *setUpPuzzle(int **);
 Sudoku *createSudoku(Cell ***, Square **);

@@ -166,6 +166,52 @@ int checkRows(Cell ***cell, Square **square) {
     return 0;
 }
 
+int checkColumns(Cell ***cell, Square **square) {
+    int i, j, k;
+    int sum[9];
+    int place[9];
+
+    // loop through columns
+    for (j = 0; j < SIZE_COLUMNS; ++j) {
+        // reset all numbers to 0
+        for (i = 0; i < 9; ++i) {
+            sum[i] = 0;
+            place[i] = 0;
+        }
+
+        // loop through cells in the column
+        for (i = 0; i < SIZE_ROWS; ++i) {
+            if (cell[i][j]->number != 0) {
+                continue;
+            }
+
+            // loop through all possible numbers
+            for (k = 0; k < 9; ++k) {
+                // check if number k is possible to put in cell
+                if (cell[i][j]->possible[k] == 0) {
+                    ++sum[k];
+                    place[k] = i;
+                }
+            }
+        }
+
+        for (k = 0; k < 9; ++k) {
+            if (sum[k] == 1) {
+                cell[place[k]][j]->number = k + 1;
+                cell[place[k]][j]->solvable = 0;
+                --unsolved;
+
+                updateSolvable(cell, place[k], j);
+                updateSquares(cell, place[k], j);
+
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
 /*function that dynamically allocates the size of the whole puzzle and returns it in form of provided cells and squares as part of 
 whole puzzle*/
 Sudoku *createSudoku(Cell ***cells, Square **squares) {
@@ -261,7 +307,11 @@ int checkPuzzle(Cell ***cell, Square **square) {
         return 1;
     }
 
-    return checkRows(cell, square);
+    if (checkRows(cell, square)) {
+        return 1;
+    }
+
+    return checkColumns(cell, square);
 }
 
 
